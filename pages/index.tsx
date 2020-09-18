@@ -6,6 +6,9 @@ export default class extends Component<any, any> {
     render() {
         return (
             <>
+                <div>
+                    Hello World!
+                </div>
             </>
         )
     }

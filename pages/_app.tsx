@@ -19,7 +19,13 @@ const App = ({Component, pageProps}) => {
                             margin: 0;
                             font-family: Roboto;
                             background: white;
-                            color: rgb(230, 232, 234);                        
+                            color: rgb(20, 20, 20);
+                            
+                            font-size: 16px; 
+                            font-style: normal; 
+                            font-variant: normal; 
+                            font-weight: 400; 
+                            line-height: 35px;                        
                         }
                     `}
             </style>
