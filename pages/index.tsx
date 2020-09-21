@@ -1,15 +1,14 @@
-import React, {Component} from 'react';
+import React from 'react';
+import Head from "next/head";
+import {Manager} from "@components/fileStream";
 
-export default class extends Component<any, any> {
-    public static title: string = "home";
+const Index = () => (
+    <>
+        <Head>
+            <title>Upload file</title>
+        </Head>
+        <Manager/>
+    </>
+);
 
-    render() {
-        return (
-            <>
-                <div>
-                    Hello World!
-                </div>
-            </>
-        )
-    }
-}
+export default Index;
