@@ -1,13 +1,18 @@
 import React, {ChangeEvent, Component} from "react";
 import {MsgType, TranscriptionEvent, WsMessage} from "@components/fileStream/transcriptionEvent";
 
-const wsHandler = (auth: string,
+const wsHandler = (kb: number,
+                   sampleRateHertz: number,
+                   auth: string,
                    fileName: string,
                    rawFile: Uint8Array,
                    cb: (transcription: TranscriptionEvent) => void,
                    cbErr: (errMsg: string) => void) => {
         const {length} = rawFile;
-        const ws = new WebSocket(`ws://localhost:8080/upload?size=${length}&Authorization=${auth}&name=${fileName}`); // TODO: Create .env
+        const rate = kb * 1000;
+
+        const ws = new WebSocket(
+            `ws://localhost:8080/upload?size=${length}&Authorization=${auth}&name=${fileName}&packetSize=${rate}&sampleRateHertz=${sampleRateHertz}`); // TODO: Create .env
         ws.onerror = (e: MessageEvent) => console.error(e);
         ws.onclose = (e) => console.log(e);
         ws.onmessage = (e: MessageEvent) => {
@@ -19,9 +24,10 @@ const wsHandler = (auth: string,
             else throw new Error("Invalid msg type");
         };
 
+
         ws.onopen = () => {
-            for (let i = 0; i < length; i += 32000) {
-                const until = (i + 32000 < length) ? i + 32000 : length;
+            for (let i = 0; i < length; i += rate) {
+                const until = (i + rate < length) ? i + rate : length;
                 const slice = rawFile.slice(i, until);
                 ws.send(slice);
             }
@@ -36,7 +42,9 @@ interface ManagerProps {
 interface ManagerState {
     file: File,
     transcriptions: TranscriptionEvent[],
-    errors: string[]
+    errors: string[],
+    kb: number,
+    sampleRateHertz: number,
 }
 
 export class Manager extends Component<ManagerProps, ManagerState> {
@@ -45,7 +53,9 @@ export class Manager extends Component<ManagerProps, ManagerState> {
     public state: ManagerState = {
         file: null,
         transcriptions: [],
-        errors: []
+        errors: [],
+        kb: 32,
+        sampleRateHertz: 16000
     };
 
     constructor(props) {
@@ -71,7 +81,7 @@ export class Manager extends Component<ManagerProps, ManagerState> {
                 self.setState({errors});
             };
 
-            wsHandler(self.auth, name, array, onData, onError);
+            wsHandler(self.state.kb, self.state.sampleRateHertz, self.auth, name, array, onData, onError);
         };
 
         reader.readAsArrayBuffer(this.state.file);
@@ -81,11 +91,29 @@ export class Manager extends Component<ManagerProps, ManagerState> {
         this.setState({file: e.target.files[0]});
     };
 
+    updateKb = (e: ChangeEvent<HTMLInputElement>) => {
+        this.setState({kb: parseInt(e.target.value)});
+    };
+
+    updateHertz = (e: ChangeEvent<HTMLInputElement>) => {
+        this.setState({sampleRateHertz: parseInt(e.target.value)});
+    };
+
     render() {
         return (
             <>
                 <input type="file"
                        onChange={this.updateFile}
+                />
+                <input type="number"
+                       onChange={this.updateKb}
+                       placeholder="Number of kb per packet"
+                       value={this.state.kb}
+                />
+                <input type="number"
+                       onChange={this.updateHertz}
+                       placeholder="Number of hertz in audio code"
+                       value={this.state.sampleRateHertz}
                 />
                 <button onClick={this.uploadFile}>Translate</button>
                 {
