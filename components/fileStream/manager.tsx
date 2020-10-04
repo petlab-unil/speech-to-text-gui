@@ -3,6 +3,8 @@ import {MsgType, TranscriptionEvent, WsMessage} from "@components/fileStream/tra
 
 const wsHandler = (kb: number,
                    sampleRateHertz: number,
+                   audioType: number,
+                   model: string,
                    auth: string,
                    fileName: string,
                    rawFile: Uint8Array,
@@ -12,13 +14,14 @@ const wsHandler = (kb: number,
         const rate = kb * 1000;
 
         const ws = new WebSocket(
-            `ws://localhost:8080/upload?size=${length}&Authorization=${auth}&name=${fileName}&packetSize=${rate}&sampleRateHertz=${sampleRateHertz}`); // TODO: Create .env
+            `ws://localhost:8080/upload?size=${length}&Authorization=${auth}&name=${fileName}&packetSize=${rate}&sampleRateHertz=${sampleRateHertz}&audioType=${audioType}&model=${model}`); // TODO: Create .env
         ws.onerror = (e: MessageEvent) => console.error(e);
         ws.onclose = (e) => console.log(e);
         ws.onmessage = (e: MessageEvent) => {
             const deserializedMsg: WsMessage = JSON.parse(e.data);
             if (deserializedMsg.msg_type === MsgType.data) {
                 const transcription: TranscriptionEvent = JSON.parse(deserializedMsg.msg);
+                console.log(transcription);
                 cb(transcription);
             } else if (deserializedMsg.msg_type === MsgType.error) cbErr(deserializedMsg.msg);
             else throw new Error("Invalid msg type");
@@ -45,6 +48,8 @@ interface ManagerState {
     errors: string[],
     kb: number,
     sampleRateHertz: number,
+    audioType: number,
+    model: string
 }
 
 export class Manager extends Component<ManagerProps, ManagerState> {
@@ -55,7 +60,9 @@ export class Manager extends Component<ManagerProps, ManagerState> {
         transcriptions: [],
         errors: [],
         kb: 32,
-        sampleRateHertz: 16000
+        sampleRateHertz: 16000,
+        audioType: 0,
+        model: "default"
     };
 
     constructor(props) {
@@ -77,11 +84,12 @@ export class Manager extends Component<ManagerProps, ManagerState> {
             };
 
             const onError = (error: string) => {
+                console.log(error);
                 const errors = self.state.errors.concat(error);
                 self.setState({errors});
             };
 
-            wsHandler(self.state.kb, self.state.sampleRateHertz, self.auth, name, array, onData, onError);
+            wsHandler(self.state.kb, self.state.sampleRateHertz, self.state.audioType, self.state.model, self.auth, name, array, onData, onError);
         };
 
         reader.readAsArrayBuffer(this.state.file);
@@ -97,6 +105,14 @@ export class Manager extends Component<ManagerProps, ManagerState> {
 
     updateHertz = (e: ChangeEvent<HTMLInputElement>) => {
         this.setState({sampleRateHertz: parseInt(e.target.value)});
+    };
+
+    updateAudioType = (e: ChangeEvent<HTMLSelectElement>) => {
+        this.setState({audioType: parseInt(e.target.value)});
+    };
+
+    updateModel = (e: ChangeEvent<HTMLSelectElement>) => {
+        this.setState({model: e.target.value});
     };
 
     render() {
@@ -115,6 +131,52 @@ export class Manager extends Component<ManagerProps, ManagerState> {
                        placeholder="Number of hertz in audio code"
                        value={this.state.sampleRateHertz}
                 />
+                <select
+                       onChange={this.updateAudioType}
+                       value={this.state.audioType}
+                >
+                    <option value={0}>
+                        ENCODING_UNSPECIFIED
+                    </option>
+                    <option value={1}>
+                        LINEAR16
+                    </option>
+                    <option value={2}>
+                        FLAC
+                    </option>
+                    <option value={3}>
+                        MULAW
+                    </option>
+                    <option value={4}>
+                        AMR
+                    </option>
+                    <option value={5}>
+                        AMR_WB
+                    </option>
+                    <option value={6}>
+                        OGG_OPUS
+                    </option>
+                    <option value={7}>
+                        SPEEX_WITH_HEADER_BYTE
+                    </option>
+                </select>
+                <select
+                    onChange={this.updateModel}
+                    value={this.state.model}
+                >
+                    <option value={"default"}>
+                        Default
+                    </option>
+                    <option value={"phone_call"}>
+                        Phone Call
+                    </option>
+                    <option value={"video"}>
+                        Video
+                    </option>
+                    <option value={"command_and_search"}>
+                        Command and search
+                    </option>
+                </select>
                 <button onClick={this.uploadFile}>Translate</button>
                 {
                     (this.state.errors.length > 0) && (
