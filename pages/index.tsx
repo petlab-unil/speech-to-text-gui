@@ -1,25 +1,37 @@
 import React from 'react';
 import Head from "next/head";
-import {Manager} from "@components/fileStream";
+import {FileStream} from "@components/fileStream";
 import {Api} from "../services/api";
+import {IndexGrid} from "@components/global/indexGrid";
+import {createEmptyUser, User} from "../types/user";
 
-const Index = ({authorization}: {authorization: string}) => (
+interface IndexProps {
+    authorization: string,
+    account: User
+}
+
+const Index = ({authorization, account}: IndexProps) => (
     <>
         <Head>
             <title>Upload file</title>
         </Head>
-        <Manager auth={authorization}/>
+        <IndexGrid>
+            <div>Welcome {account.name}</div>
+            <div><FileStream auth={authorization}/></div>
+        </IndexGrid>
     </>
 );
 
-Index.getInitialProps = async ctx => {
+Index.getInitialProps = async (ctx): Promise<IndexProps> => {
     try {
         const api = new Api();
         await api.getInitialToken(ctx);
+        const account: User = await api.me();
+        console.log(account);
         api.removeCtx();
-        return api;
+        return {authorization: api.authorization, account};
     } catch (e) {
-        return {};
+        return {authorization: "", account: createEmptyUser()};
     }
 };
 
