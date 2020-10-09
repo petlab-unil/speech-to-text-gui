@@ -1,10 +1,12 @@
 import Router from 'next/router';
 import {AccountSchema, SessionSchema} from "../types/account";
+import {User} from "../types/user";
 
 export class Api {
     public static host = process.env.NEXT_PUBLIC_API_URL;
     public authorization: string;
     private ctx: any;
+
     constructor(auth?: string) {
         if (auth) {
             this.authorization = auth;
@@ -109,7 +111,7 @@ export class Api {
                 if (!cookie) throw new Error("No cookies");
                 this.setAuth(Api.getCookie(cookie, "authorization"));
                 const isValid = await this.checkSession();
-                if(!isValid) throw new Error("Invalid token");
+                if (!isValid) throw new Error("Invalid token");
             } catch (e) {
                 const {res} = ctx;
                 res.writeHead(301, {Location: "/login"});
@@ -121,13 +123,12 @@ export class Api {
                 const auth = Api.getCookie(cookie, "authorization");
                 this.setAuth(auth);
                 const isValid = await this.checkSession();
-                if(!isValid) throw new Error("Invalid token");
+                if (!isValid) throw new Error("Invalid token");
             } catch (e) {
                 await Router.push("/login");
             }
         }
     };
-
 
     public setAuth = (value: string) => {
         this.authorization = value;
@@ -144,4 +145,9 @@ export class Api {
 
         }
     };
+
+    public me = async (): Promise<User> => {
+        const res = await this.get("me");
+        return await res.json();
+    }
 }

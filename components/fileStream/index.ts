@@ -1,1 +1,1 @@
-export {Manager} from "./manager";
+export {FileStream} from "./fileStream";
