@@ -4,6 +4,7 @@ import {FileStream} from "@components/fileStream";
 import {Api} from "../services/api";
 import {IndexGrid} from "@components/global/indexGrid";
 import {createEmptyUser, User} from "../types/user";
+import {UserInfo} from "@components/userInfo/userInfo";
 
 interface IndexProps {
     authorization: string,
@@ -16,7 +17,7 @@ const Index = ({authorization, account}: IndexProps) => (
             <title>Upload file</title>
         </Head>
         <IndexGrid>
-            <div>Welcome {account.name}</div>
+            <UserInfo {...account} />
             <div><FileStream auth={authorization}/></div>
         </IndexGrid>
     </>

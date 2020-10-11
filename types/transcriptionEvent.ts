@@ -5,8 +5,8 @@ export interface Alternative {
 
 export interface TranscriptionEvent {
     alternatives: Alternative[],
-    is_final: boolean,
-    result_end_time: {
+    isfinal: boolean,
+    resultendtime: {
         nanos: number,
         seconds: number
     }

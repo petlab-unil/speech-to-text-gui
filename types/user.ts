@@ -1,4 +1,9 @@
-export interface Translation {}
+import {TranscriptionEvent} from "./transcriptionEvent";
+
+export interface Translation {
+    file_name: string,
+    transcripts: TranscriptionEvent[]
+}
 
 export interface User {
     _id: string,
