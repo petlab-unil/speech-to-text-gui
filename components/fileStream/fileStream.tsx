@@ -3,9 +3,10 @@ import {TranscriptionEvent} from "../../types/transcriptionEvent";
 import {Select} from "@components/fileStream/select";
 import {wsHandler} from "@components/fileStream/wsHandler";
 import {audioTypes, modelOptions} from "@components/fileStream/selectOptions";
-import {TranscriptionText} from "@components/fileStream/transcriptionText";
+import {TranscriptionText} from "@components/transcriptionText";
 import {Button, FormEntry, FormSection, Input, Label} from "@components/fileStream/input";
 import Styled from "styled-components";
+import {SectionTitle} from "@components/global/sectionTitle";
 
 const Grid = Styled.div`
     width: calc(100% - 60px);
@@ -15,17 +16,6 @@ const Grid = Styled.div`
     grid-template-rows: auto auto auto;
     grid-row-gap: 2em;
     grid-column-gap: 4em;
-`;
-
-const TranslationTitle = Styled.h1`
-    grid-column-start: 1;
-    grid-column-end: 3;
-    text-align: center;
-    border-bottom: 1px solid white;
-    padding-bottom: 20px;
-    margin-bottom: 0px;
-    margin-top: 30px;
-    font-size: 40px;
 `;
 
 interface ManagerProps {
@@ -109,9 +99,9 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
         return (
             <>
                 <Grid>
-                    <TranslationTitle>
+                    <SectionTitle>
                         Translate Audio
-                    </TranslationTitle>
+                    </SectionTitle>
                     <FormSection>
                         <Label htmlFor="file">{!!this.state.file ? this.state.file.name : "Input File"}</Label>
                         <input id="file" type="file"

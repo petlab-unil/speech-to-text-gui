@@ -1,5 +1,5 @@
 import React from 'react';
-import {TranscriptionEvent} from "../../types/transcriptionEvent";
+import {TranscriptionEvent} from "../types/transcriptionEvent";
 
 export const TranscriptionText = ({transcriptions}:
                                       { transcriptions: TranscriptionEvent[] }) => (
@@ -14,7 +14,7 @@ export const TranscriptionText = ({transcriptions}:
             <tr key={t.alternatives[0].transcript}>
                 <td>{t.alternatives[0].transcript}</td>
                 <td>{t.alternatives[0].confidence}</td>
-                <td>{t.result_end_time.seconds} seconds, {t.result_end_time.nanos} nanos</td>
+                <td>{t.resultendtime.seconds} seconds, {t.resultendtime.nanos} nanos</td>
             </tr>)}
         </tbody>
     </table>
