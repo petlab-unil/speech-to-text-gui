@@ -14,7 +14,7 @@ export const wsHandler = (kb: number,
         const rate = kb * 1000;
 
         const ws = new WebSocket(
-            `ws://localhost:8080/upload?size=${length}&Authorization=${auth}&name=${fileName}&packetSize=${rate}&sampleRateHertz=${sampleRateHertz}&audioType=${audioType}&model=${model}`); // TODO: Create .env
+            `ws://${process.env.NEXT_PUBLIC_API_URL}/upload?size=${length}&Authorization=${auth}&name=${fileName}&packetSize=${rate}&sampleRateHertz=${sampleRateHertz}&audioType=${audioType}&model=${model}`);
         ws.onerror = (e: MessageEvent) => console.error(e);
         ws.onclose = (e) => console.log(e);
         ws.onmessage = (e: MessageEvent) => {
