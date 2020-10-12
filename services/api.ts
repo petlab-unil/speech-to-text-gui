@@ -3,7 +3,7 @@ import {AccountSchema, SessionSchema} from "../types/account";
 import {User} from "../types/user";
 
 export class Api {
-    public static host = process.env.NEXT_PUBLIC_API_URL;
+    public static host = `http://${process.env.NEXT_PUBLIC_API_URL}`;
     public authorization: string;
     private ctx: any;
 

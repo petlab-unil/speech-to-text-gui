@@ -6,7 +6,7 @@ COPY . .
 
 RUN rm -f .env
 
-RUN echo NEXT_PUBLIC_API_URL=http://speechtool.unil.ch/api > .env.local
+RUN echo NEXT_PUBLIC_API_URL=speechtool.unil.ch/api > .env.local
 
 RUN npm install
 
