@@ -28,7 +28,6 @@ Index.getInitialProps = async (ctx): Promise<IndexProps> => {
         const api = new Api();
         await api.getInitialToken(ctx);
         const account: User = await api.me();
-        console.log(account);
         api.removeCtx();
         return {authorization: api.authorization, account};
     } catch (e) {
