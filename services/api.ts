@@ -1,6 +1,6 @@
 import Router from 'next/router';
 import {AccountSchema, SessionSchema} from "../types/account";
-import {User} from "../types/user";
+import {Translation, User} from "../types/user";
 
 export class Api {
     public static host = `http://${process.env.NEXT_PUBLIC_API_URL}`;
@@ -149,5 +149,15 @@ export class Api {
     public me = async (): Promise<User> => {
         const res = await this.get("me");
         return await res.json();
+    }
+
+    public oneTranslation = async (id: string): Promise<Translation> => {
+        const res = await this.get(`translations/one?id=${id}`);
+        return await res.json();
+    }
+
+    public deleteTranslation = async (id: string) => {
+        await this.post(`translations/delete?id=${id}`, "");
+        window.location.reload();
     }
 }

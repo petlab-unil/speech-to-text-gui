@@ -33,7 +33,7 @@ export const audioTypes: SelectOptions[] = [
         value: 7,
         text: "SPEEX_WITH_HEADER_BYTE"
     },
-]
+];
 
 export const modelOptions: SelectOptions[] = [
     {
@@ -52,4 +52,15 @@ export const modelOptions: SelectOptions[] = [
         value: "command_and_search",
         text: "Command and search"
     },
-]
+];
+
+export const languageOptions: SelectOptions[] = [
+    {
+        value: "fr-FR",
+        text: "French"
+    },
+    {
+        value: "en-US",
+        text: "English"
+    },
+];

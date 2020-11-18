@@ -2,7 +2,7 @@ import React, {ChangeEvent, Component} from "react";
 import {TranscriptionEvent} from "../../types/transcriptionEvent";
 import {Select} from "@components/fileStream/select";
 import {wsHandler} from "@components/fileStream/wsHandler";
-import {audioTypes, modelOptions} from "@components/fileStream/selectOptions";
+import {audioTypes, languageOptions, modelOptions} from "@components/fileStream/selectOptions";
 import {TranscriptionText} from "@components/transcriptionText";
 import {Button, FormEntry, FormSection, Input, Label} from "@components/fileStream/input";
 import Styled from "styled-components";
@@ -13,9 +13,37 @@ const Grid = Styled.div`
     padding: 20px 30px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto auto auto auto;
     grid-row-gap: 2em;
     grid-column-gap: 4em;
+`;
+
+const WhiteBar = Styled.div`
+    background-color: white;
+    width: 100%;
+    height: 30px;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    border-radius: 30px;
+    position: relative;
+    overflow: hidden;
+`;
+
+const GreenBar = Styled.div`
+    background-color: green;
+    height: 30px;
+    border-radius: 30px;
+`;
+
+const BarText = Styled.div`
+    color: black;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 0;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
 `;
 
 interface ManagerProps {
@@ -29,7 +57,9 @@ interface ManagerState {
     kb: number,
     sampleRateHertz: number,
     audioType: number,
-    model: string
+    model: string,
+    language: string,
+    barSize: number
 }
 
 export class FileStream extends Component<ManagerProps, ManagerState> {
@@ -42,7 +72,9 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
         kb: 32,
         sampleRateHertz: 16000,
         audioType: 0,
-        model: "default"
+        model: "default",
+        language: "fr-FR",
+        barSize: 0
     };
 
     constructor(props) {
@@ -69,10 +101,17 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
                 self.setState({errors});
             };
 
-            wsHandler(self.state.kb, self.state.sampleRateHertz, self.state.audioType, self.state.model, self.auth, name, array, onData, onError);
+            const updateBar = (size: number) => {
+                self.setUpdateBarSize(size);
+            };
+            wsHandler(self.state.kb, self.state.sampleRateHertz, self.state.audioType, self.state.language, self.state.model, self.auth, name, array, updateBar, onData, onError);
         };
 
         reader.readAsArrayBuffer(this.state.file);
+    };
+
+    setUpdateBarSize = (size: number) => {
+        this.setState({barSize: size});
     };
 
     updateFile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -93,6 +132,10 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
 
     updateModel = (e: ChangeEvent<HTMLSelectElement>) => {
         this.setState({model: e.target.value});
+    };
+
+    updateLanguage = (e: ChangeEvent<HTMLSelectElement>) => {
+        this.setState({language: e.target.value});
     };
 
     render() {
@@ -136,7 +179,15 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
                         <FormEntry>Transcription Model</FormEntry>
                         <Select options={modelOptions} value={this.state.model} onChange={this.updateModel}/>
                     </FormSection>
+                    <FormSection>
+                        <FormEntry>Language</FormEntry>
+                        <Select options={languageOptions} value={this.state.language} onChange={this.updateLanguage}/>
+                    </FormSection>
                     <Button onClick={this.uploadFile}>Translate</Button>
+                    {this.state.barSize > 0 && <WhiteBar>
+                        <GreenBar style={{width: `${this.state.barSize}%`}}/>
+                        <BarText>Uploading ({this.state.barSize.toFixed(2)}%)</BarText>
+                    </WhiteBar>}
                 </Grid>
 
                 {

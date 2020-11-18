@@ -17,7 +17,7 @@ const Index = ({authorization, account}: IndexProps) => (
             <title>Upload file</title>
         </Head>
         <IndexGrid>
-            <UserInfo {...account} />
+            <UserInfo user={account} api={new Api(authorization)} />
             <div><FileStream auth={authorization}/></div>
         </IndexGrid>
     </>

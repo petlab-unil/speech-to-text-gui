@@ -8,7 +8,7 @@ export interface Translation {
 export interface User {
     _id: string,
     name: string,
-    translations: Translation[]
+    translations: { _id: string, file_name: string }[]
 }
 
 export const createEmptyUser = (): User => {
@@ -16,5 +16,5 @@ export const createEmptyUser = (): User => {
         _id: "",
         name: "",
         translations: []
-    }
-}
+    };
+};
