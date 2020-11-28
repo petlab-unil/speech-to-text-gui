@@ -29,7 +29,7 @@ export class Api {
 
     public hostName = (): string => {
         return Api.host;
-    }
+    };
 
     private get = async (path: string): Promise<Response> => {
         const requestOptions = {
@@ -88,7 +88,7 @@ export class Api {
 
     public removeCtx = () => {
         delete this.ctx;
-    }
+    };
 
     private static getCookie = (cookies: string, key: string): string => {
         const splitted: string[] = cookies.split("; ");
@@ -101,7 +101,7 @@ export class Api {
     private checkSession = async (): Promise<boolean> => {
         const resp = await this.get("sessions/check");
         return resp.status === 200;
-    }
+    };
 
     public getInitialToken = async (ctx) => {
         this.ctx = ctx;
@@ -149,27 +149,31 @@ export class Api {
     public me = async (): Promise<User> => {
         const res = await this.get("me");
         return await res.json();
-    }
+    };
 
     public oneTranslation = async (id: string): Promise<Translation> => {
         const res = await this.get(`translations/one?id=${id}`);
-        return await res.json();
-    }
+        const translation: Translation = await res.json();
+        translation.transcripts = translation.transcripts.sort((a, b) =>
+            a.resultendtime.seconds * 1e9 + a.resultendtime.nanos -
+            b.resultendtime.seconds * 1e9 + b.resultendtime.nanos);
+        return translation;
+    };
 
     public deleteTranslation = async (id: string) => {
         await this.post(`translations/delete?id=${id}`, "");
-    }
+    };
 
     public allAccounts = async (): Promise<User[]> => {
         const res = await this.get("account/all");
         return await res.json();
-    }
+    };
 
     public share = async (translationId: string, accountToShare: string) => {
         const shareParams = {
             translationId,
             accountToShare
-        }
+        };
         await this.post("translations/share", JSON.stringify(shareParams));
-    }
+    };
 }
