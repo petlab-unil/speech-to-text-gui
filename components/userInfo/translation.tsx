@@ -65,11 +65,6 @@ const extractSentences = (transcriptionEvents: TranscriptionEvent[]): string => 
             transcript: "",
             words: []
         }],
-        isfinal: false,
-        resultendtime: {
-            nanos: 0,
-            seconds: 0
-        }
     });
 
     transcriptionEvents.forEach(({alternatives}) =>

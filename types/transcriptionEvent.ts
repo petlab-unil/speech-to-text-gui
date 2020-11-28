@@ -18,6 +18,4 @@ export interface Alternative {
 
 export interface TranscriptionEvent {
     alternatives: Alternative[],
-    isfinal: boolean,
-    resultendtime: GoogleTime
 }

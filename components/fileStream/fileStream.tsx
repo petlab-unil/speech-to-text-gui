@@ -206,7 +206,9 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
                         <GreenBar style={{width: `${this.state.barSize}%`}}/>
                         {this.state.closed ?
                             <BarText>Connection closed</BarText> :
-                            <BarText>Uploading ({this.state.barSize.toFixed(2)}%)</BarText>
+                            this.state.barSize >= 100 ?
+                                <BarText>Upload complete, please wait for Google to terminate the translation</BarText> :
+                                <BarText>Uploading ({this.state.barSize.toFixed(2)}%)</BarText>
                         }
                     </WhiteBar>}
                 </Grid>

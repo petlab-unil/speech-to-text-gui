@@ -153,11 +153,7 @@ export class Api {
 
     public oneTranslation = async (id: string): Promise<Translation> => {
         const res = await this.get(`translations/one?id=${id}`);
-        const translation: Translation = await res.json();
-        translation.transcripts = translation.transcripts.sort((a, b) =>
-            a.resultendtime.seconds * 1e9 + a.resultendtime.nanos -
-            b.resultendtime.seconds * 1e9 + b.resultendtime.nanos);
-        return translation;
+        return await res.json();
     };
 
     public deleteTranslation = async (id: string) => {
