@@ -130,9 +130,9 @@ export const TranslationContainer = ({translationId, name, api, setUser, allAcco
             const b64 = btoa(unescape(JSON.stringify(transcripts)));
             setHrefDlJson(`data:application/octet-stream;charset=utf-8;base64,${b64}`);
             const txt = transcripts.map(t => t.alternatives.map(({transcript}) => transcript).join(" ")).join(" ");
-            setHrefDlTxt(`data:application/octet-stream;charset=utf-8;base64,${btoa(txt)}`);
+            setHrefDlTxt(`data:application/octet-stream;charset=utf-8;base64,${btoa(unescape(txt))}`);
             const withSpeaker = extractSentences(transcripts);
-            setHrefDlWithSpeaker(`data:application/octet-stream;charset=utf-8;base64,${btoa(withSpeaker)}`);
+            setHrefDlWithSpeaker(`data:application/octet-stream;charset=utf-8;base64,${btoa(unescape(withSpeaker))}`);
         }
         setToggled(!toggled);
     };
