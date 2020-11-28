@@ -1,6 +1,6 @@
 import Styled from "styled-components";
 
-export const SectionTitle = Styled.h1`
+export const SectionTitle = Styled.div`
     grid-column-start: 1;
     grid-column-end: 3;
     text-align: center;
@@ -9,6 +9,7 @@ export const SectionTitle = Styled.h1`
     margin-bottom: 0px;
     margin-top: 30px;
     font-size: 40px;
+    font-weight: bold;
 `;
 
 export const SubSectionTitle = Styled.h2`

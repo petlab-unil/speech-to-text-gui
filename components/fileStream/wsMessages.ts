@@ -4,6 +4,6 @@ export enum MsgType {
 }
 
 export interface WsMessage {
-    msg_type: MsgType,
+    msgType: MsgType,
     msg: string
 }

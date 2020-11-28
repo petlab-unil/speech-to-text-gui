@@ -8,16 +8,17 @@ import {UserInfo} from "@components/userInfo/userInfo";
 
 interface IndexProps {
     authorization: string,
-    account: User
+    account: User,
+    allAccounts: User[]
 }
 
-const Index = ({authorization, account}: IndexProps) => (
+const Index = ({authorization, account, allAccounts}: IndexProps) => (
     <>
         <Head>
             <title>Upload file</title>
         </Head>
         <IndexGrid>
-            <UserInfo user={account} api={new Api(authorization)} />
+            <UserInfo user={account} api={new Api(authorization)} allAccounts={allAccounts}/>
             <div><FileStream auth={authorization}/></div>
         </IndexGrid>
     </>
@@ -27,11 +28,12 @@ Index.getInitialProps = async (ctx): Promise<IndexProps> => {
     try {
         const api = new Api();
         await api.getInitialToken(ctx);
-        const account: User = await api.me();
+        const [account, allUsers] = await Promise.all([api.me(), api.allAccounts()]);
         api.removeCtx();
-        return {authorization: api.authorization, account};
+        const allAccounts = allUsers.filter(user => user.name !== account.name);
+        return {authorization: api.authorization, account, allAccounts};
     } catch (e) {
-        return {authorization: "", account: createEmptyUser()};
+        return {authorization: "", account: createEmptyUser(), allAccounts: []};
     }
 };
 

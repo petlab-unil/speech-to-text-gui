@@ -10,12 +10,15 @@ export const TranscriptionText = ({transcriptions}:
             <th>Confidence</th>
             <th>End time</th>
         </tr>
-        {transcriptions.map(t =>
-            <tr key={t.alternatives[0].transcript}>
-                <td>{t.alternatives[0].transcript}</td>
-                <td>{t.alternatives[0].confidence}</td>
-                <td>{t.resultendtime.seconds} seconds, {t.resultendtime.nanos} nanos</td>
-            </tr>)}
+        {transcriptions.sort((a, b) =>
+            a.resultendtime.seconds * 1e9 + a.resultendtime.nanos -
+            b.resultendtime.seconds * 1e9 + b.resultendtime.nanos)
+            .map(t =>
+                <tr key={t.alternatives[0].transcript}>
+                    <td>{t.alternatives[0].transcript}</td>
+                    <td>{t.alternatives[0].confidence}</td>
+                    <td>{t.resultendtime.seconds} seconds, {t.resultendtime.nanos} nanos</td>
+                </tr>)}
         </tbody>
     </table>
-)
+);

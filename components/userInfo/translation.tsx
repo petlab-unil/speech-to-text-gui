@@ -3,6 +3,8 @@ import Styled from "styled-components";
 import {TranscriptionText} from "@components/transcriptionText";
 import {TranscriptionEvent, Word} from "../../types/transcriptionEvent";
 import {Api} from "../../services/api";
+import {User} from "../../types/user";
+import {Select} from "@components/fileStream/select";
 
 const TranslationWrapper = Styled.div`
     width: calc(100% - 2px);
@@ -92,20 +94,30 @@ const extractSentences = (transcriptionEvents: TranscriptionEvent[]): string => 
 interface TranslationProps {
     translationId: string,
     name: string,
-    api: Api
+    api: Api,
+    allAccounts: User[],
+    setUser: (user: User) => void
 }
 
-export const TranslationContainer = ({translationId, name, api}: TranslationProps) => {
+export const TranslationContainer = ({translationId, name, api, setUser, allAccounts}: TranslationProps) => {
+    const options = allAccounts.map(account => ({value: account._id, text: account.name}));
+
     const [toggled, setToggled] = useState<boolean>(false);
     const [transcripts, setTranscripts] = useState<TranscriptionEvent[]>([]);
     const [hrefDlJson, setHrefDlJson] = useState<string>("");
     const [hrefDlTxt, setHrefDlTxt] = useState<string>("");
     const [hrefDlWithSpeaker, setHrefDlWithSpeaker] = useState<string>("");
+    const [accountToShare, setToShare] = useState<string>(options?.[0].value);
 
     const deleteThis = async () => {
-        await api.deleteTranslation(translationId);
-    }
-
+        try {
+            await api.deleteTranslation(translationId);
+            const updatedUser = await api.me();
+            setUser(updatedUser);
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     const btoa: (s: string) => string =
         process.browser ? window.btoa : (u8str: string) => Buffer.from(u8str).toString("base64");
@@ -125,8 +137,26 @@ export const TranslationContainer = ({translationId, name, api}: TranslationProp
         setToggled(!toggled);
     };
 
+    const updateToShare = (e) => {
+        setToShare(e.target.value);
+    };
+
+    const share = async () => {
+        await api.share(translationId, accountToShare);
+    };
+
+
     return <TranslationWrapper>
         <FileName onClick={toggle}>{name}</FileName>
+        <div>
+            Share with: <Select
+            options={options}
+            value={accountToShare}
+            onChange={updateToShare}/>
+        </div>
+        <div>
+            <button onClick={share}>Share</button>
+        </div>
         {toggled && <><DownloadButton download={`${name.split(".")[0]}.json`} href={hrefDlJson}>Download
             json</DownloadButton>
             <DownloadButton download={`${name.split(".")[0]}.txt`} href={hrefDlTxt}>Download text</DownloadButton>

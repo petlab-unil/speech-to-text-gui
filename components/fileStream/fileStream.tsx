@@ -59,7 +59,8 @@ interface ManagerState {
     audioType: number,
     model: string,
     language: string,
-    barSize: number
+    barSize: number,
+    closed: boolean
 }
 
 export class FileStream extends Component<ManagerProps, ManagerState> {
@@ -74,7 +75,8 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
         audioType: 0,
         model: "default",
         language: "fr-FR",
-        barSize: 0
+        barSize: 0,
+        closed: false
     };
 
     constructor(props) {
@@ -104,7 +106,23 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
             const updateBar = (size: number) => {
                 self.setUpdateBarSize(size);
             };
-            wsHandler(self.state.kb, self.state.sampleRateHertz, self.state.audioType, self.state.language, self.state.model, self.auth, name, array, updateBar, onData, onError);
+
+            const onClose = (code: number) => {
+                self.setState({closed: true});
+            };
+
+            wsHandler(self.state.kb,
+                self.state.sampleRateHertz,
+                self.state.audioType,
+                self.state.language,
+                self.state.model,
+                self.auth,
+                name,
+                array,
+                updateBar,
+                onData,
+                onError,
+                onClose);
         };
 
         reader.readAsArrayBuffer(this.state.file);
@@ -186,7 +204,10 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
                     <Button onClick={this.uploadFile}>Translate</Button>
                     {this.state.barSize > 0 && <WhiteBar>
                         <GreenBar style={{width: `${this.state.barSize}%`}}/>
-                        <BarText>Uploading ({this.state.barSize.toFixed(2)}%)</BarText>
+                        {this.state.closed ?
+                            <BarText>Connection closed</BarText> :
+                            <BarText>Uploading ({this.state.barSize.toFixed(2)}%)</BarText>
+                        }
                     </WhiteBar>}
                 </Grid>
 

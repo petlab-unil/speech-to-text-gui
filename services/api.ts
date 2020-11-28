@@ -158,6 +158,18 @@ export class Api {
 
     public deleteTranslation = async (id: string) => {
         await this.post(`translations/delete?id=${id}`, "");
-        window.location.reload();
+    }
+
+    public allAccounts = async (): Promise<User[]> => {
+        const res = await this.get("account/all");
+        return await res.json();
+    }
+
+    public share = async (translationId: string, accountToShare: string) => {
+        const shareParams = {
+            translationId,
+            accountToShare
+        }
+        await this.post("translations/share", JSON.stringify(shareParams));
     }
 }
