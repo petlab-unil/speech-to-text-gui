@@ -127,7 +127,7 @@ export const TranslationContainer = ({translationId, name, api, setUser, allAcco
             const translation = await api.oneTranslation(translationId);
             const {transcripts} = translation;
             setTranscripts(transcripts);
-            const b64 = btoa(JSON.stringify(transcripts));
+            const b64 = btoa(unescape(JSON.stringify(transcripts)));
             setHrefDlJson(`data:application/octet-stream;charset=utf-8;base64,${b64}`);
             const txt = transcripts.map(t => t.alternatives.map(({transcript}) => transcript).join(" ")).join(" ");
             setHrefDlTxt(`data:application/octet-stream;charset=utf-8;base64,${btoa(txt)}`);
