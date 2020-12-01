@@ -4,19 +4,18 @@ import {Select} from "@components/fileStream/select";
 import {wsHandler} from "@components/fileStream/wsHandler";
 import {audioTypes, languageOptions, modelOptions} from "@components/fileStream/selectOptions";
 import {TranscriptionText} from "@components/transcriptionText";
-import {Button, FormEntry, FormSection, Input, Label} from "@components/fileStream/input";
+import {
+    Button,
+    FormEntry,
+    FormSection,
+    ParamGrid,
+    Input,
+    Label,
+    PlusLabel,
+    SmallParamGrid, Surrounding, AddFileText
+} from "@components/fileStream/input";
 import Styled from "styled-components";
 import {SectionTitle} from "@components/global/sectionTitle";
-
-const Grid = Styled.div`
-    width: calc(100% - 60px);
-    padding: 20px 30px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto auto auto;
-    grid-row-gap: 2em;
-    grid-column-gap: 4em;
-`;
 
 const WhiteBar = Styled.div`
     background-color: white;
@@ -24,15 +23,16 @@ const WhiteBar = Styled.div`
     height: 30px;
     grid-column-start: 1;
     grid-column-end: 3;
-    border-radius: 30px;
+    border-radius: 5px;
     position: relative;
     overflow: hidden;
+    border: 1px groove white;
 `;
 
 const GreenBar = Styled.div`
-    background-color: green;
+    background-color: #636c78;
     height: 30px;
-    border-radius: 30px;
+    border-radius: 5px;
 `;
 
 const BarText = Styled.div`
@@ -129,15 +129,15 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
     };
 
     setUpdateBarSize = (size: number) => {
-        this.setState({barSize: size});
+        this.setState({barSize: size, closed: false});
     };
 
     updateFile = (e: ChangeEvent<HTMLInputElement>) => {
-        this.setState({file: e.target.files[0]});
+        this.setState({file: e.target.files[0], closed: false});
     };
 
     updateKb = (e: ChangeEvent<HTMLInputElement>) => {
-        this.setState({kb: parseInt(e.target.value)});
+        this.setState({kb: parseInt(e.target.value), closed: false});
     };
 
     updateHertz = (e: ChangeEvent<HTMLInputElement>) => {
@@ -159,59 +159,77 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
     render() {
         return (
             <>
-                <Grid>
-                    <SectionTitle>
-                        Translate Audio
-                    </SectionTitle>
-                    <FormSection>
-                        <Label htmlFor="file">{!!this.state.file ? this.state.file.name : "Input File"}</Label>
-                        <input id="file" type="file"
-                               style={{display: "none"}}
-                               onChange={this.updateFile}
-                        />
-                    </FormSection>
-                    <FormSection>
-                        <FormEntry>Upload rate (kB)</FormEntry>
-                        <Input type="number"
-                               onChange={this.updateKb}
-                               placeholder="Number of kb per packet"
-                               value={this.state.kb}
-                        />
-                    </FormSection>
-                    <FormSection>
-                        <FormEntry>Hertz Audio Encoding</FormEntry>
-                        <Input type="number"
-                               onChange={this.updateHertz}
-                               placeholder="Number of hertz in audio code"
-                               value={this.state.sampleRateHertz}
-                        />
-                    </FormSection>
-                    <FormSection>
-                        <FormEntry>Audio type</FormEntry>
-                        <Select onChange={this.updateAudioType}
-                                value={this.state.audioType}
-                                options={audioTypes}
-                        />
-                    </FormSection>
-                    <FormSection>
-                        <FormEntry>Transcription Model</FormEntry>
-                        <Select options={modelOptions} value={this.state.model} onChange={this.updateModel}/>
-                    </FormSection>
-                    <FormSection>
-                        <FormEntry>Language</FormEntry>
-                        <Select options={languageOptions} value={this.state.language} onChange={this.updateLanguage}/>
-                    </FormSection>
-                    <Button onClick={this.uploadFile}>Translate</Button>
-                    {this.state.barSize > 0 && <WhiteBar>
-                        <GreenBar style={{width: `${this.state.barSize}%`}}/>
-                        {this.state.closed ?
-                            <BarText>Connection closed</BarText> :
-                            this.state.barSize >= 100 ?
-                                <BarText>Upload complete, please wait for Google to terminate the translation</BarText> :
-                                <BarText>Uploading ({this.state.barSize.toFixed(2)}%)</BarText>
-                        }
-                    </WhiteBar>}
-                </Grid>
+                <SectionTitle>
+                    Transcribe Any Audio File
+                </SectionTitle>
+                {
+                    !this.state.file && <Surrounding>
+                        <SmallParamGrid>
+                            <PlusLabel htmlFor="file">+</PlusLabel>
+                            <AddFileText>
+                                Add your file to be transcribed
+                            </AddFileText>
+                            <input id="file" type="file"
+                                   style={{display: "none"}}
+                                   onChange={this.updateFile}
+                            />
+                        </SmallParamGrid>
+                    </Surrounding>
+                }
+                {!!this.state.file && <Surrounding>
+                    <ParamGrid>
+                        <FormSection>
+                            <Label htmlFor="file">{!!this.state.file ? this.state.file.name : "Input File"}</Label>
+                            <input id="file" type="file"
+                                   style={{display: "none"}}
+                                   onChange={this.updateFile}
+                            />
+                        </FormSection>
+                        <FormSection>
+                            <FormEntry>Upload rate (kB)</FormEntry>
+                            <Input type="number"
+                                   onChange={this.updateKb}
+                                   placeholder="Number of kb per packet"
+                                   value={this.state.kb}
+                            />
+                        </FormSection>
+                        <FormSection>
+                            <FormEntry>Hertz Audio Encoding</FormEntry>
+                            <Input type="number"
+                                   onChange={this.updateHertz}
+                                   placeholder="Number of hertz in audio code"
+                                   value={this.state.sampleRateHertz}
+                            />
+                        </FormSection>
+                        <FormSection>
+                            <FormEntry>Audio type</FormEntry>
+                            <Select onChange={this.updateAudioType}
+                                    value={this.state.audioType}
+                                    options={audioTypes}
+                            />
+                        </FormSection>
+                        <FormSection>
+                            <FormEntry>Transcription Model</FormEntry>
+                            <Select options={modelOptions} value={this.state.model} onChange={this.updateModel}/>
+                        </FormSection>
+                        <FormSection>
+                            <FormEntry>Language</FormEntry>
+                            <Select options={languageOptions} value={this.state.language}
+                                    onChange={this.updateLanguage}/>
+                        </FormSection>
+                        <Button onClick={this.uploadFile}>Translate</Button>
+                        {this.state.barSize > 0 && <WhiteBar>
+                            <GreenBar style={{width: `${this.state.barSize}%`}}/>
+                            {this.state.closed ?
+                                <BarText>Connection closed</BarText> :
+                                this.state.barSize >= 100 ?
+                                    <BarText>Upload complete, please wait for Google to terminate the
+                                        translation</BarText> :
+                                    <BarText>Uploading ({this.state.barSize.toFixed(2)}%)</BarText>
+                            }
+                        </WhiteBar>}
+                    </ParamGrid>
+                </Surrounding>}
 
                 {
                     (this.state.errors.length > 0) && (
