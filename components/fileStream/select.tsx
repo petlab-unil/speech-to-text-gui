@@ -9,12 +9,13 @@ export interface SelectOptions {
 interface SelectProps {
     options: SelectOptions[],
     value: string | number,
+    right: boolean,
     onChange: (e: ChangeEvent<HTMLSelectElement>) => void
 }
 
-export const Select = ({options, value, onChange}: SelectProps) => {
+export const Select = ({options, value, onChange, right}: SelectProps) => {
     return (
-        <StyledSelect value={value}
+        <StyledSelect value={value} right={right}
                 onChange={(e) => onChange(e)}>
             {options
                 .map(({text, value}) =>

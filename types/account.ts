@@ -13,4 +13,5 @@ export interface LoginState {
     imgSrc: string,
     login: AccountSchema,
     loadingDisplay: string,
+    err: string
 }

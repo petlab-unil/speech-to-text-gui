@@ -3,6 +3,7 @@ import Head from "next/head";
 import {FileStream} from "@components/fileStream";
 import {Api} from "../services/api";
 import {IndexGrid} from "@components/global/indexGrid";
+import {NavBar} from "@components/navBar";
 
 interface IndexProps {
     authorization: string,
@@ -13,6 +14,7 @@ const Index = ({authorization}: IndexProps) => (
         <Head>
             <title>Upload file</title>
         </Head>
+        <NavBar />
         <IndexGrid>
             <FileStream auth={authorization}/>
         </IndexGrid>

@@ -1,8 +1,9 @@
 import {TranscriptionEvent} from "./transcriptionEvent";
 
-export interface Translation {
+export interface Transcription {
     file_name: string,
-    transcripts: TranscriptionEvent[]
+    transcripts: TranscriptionEvent[],
+    _id: string
 }
 
 export interface User {

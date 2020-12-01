@@ -107,7 +107,7 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
                 self.setUpdateBarSize(size);
             };
 
-            const onClose = (code: number) => {
+            const onClose = (_: number) => {
                 self.setState({closed: true});
             };
 
@@ -160,7 +160,7 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
         return (
             <>
                 <SectionTitle>
-                    Transcribe Any Audio File
+                    Transcribe An Audio File
                 </SectionTitle>
                 {
                     !this.state.file && <Surrounding>
@@ -206,16 +206,26 @@ export class FileStream extends Component<ManagerProps, ManagerState> {
                             <Select onChange={this.updateAudioType}
                                     value={this.state.audioType}
                                     options={audioTypes}
+                                    right={true}
                             />
                         </FormSection>
                         <FormSection>
                             <FormEntry>Transcription Model</FormEntry>
-                            <Select options={modelOptions} value={this.state.model} onChange={this.updateModel}/>
+                            <Select
+                                options={modelOptions}
+                                value={this.state.model}
+                                onChange={this.updateModel}
+                                right={true}
+                            />
                         </FormSection>
                         <FormSection>
                             <FormEntry>Language</FormEntry>
-                            <Select options={languageOptions} value={this.state.language}
-                                    onChange={this.updateLanguage}/>
+                            <Select
+                                options={languageOptions}
+                                value={this.state.language}
+                                onChange={this.updateLanguage}
+                                right={true}
+                            />
                         </FormSection>
                         <Button onClick={this.uploadFile}>Translate</Button>
                         {this.state.barSize > 0 && <WhiteBar>

@@ -62,6 +62,7 @@ export const Button = Styled.button`
     grid-column-end: 3;
     width: 90%;
 `;
+
 export const StyledSelect = Styled.select`
     ${formOptionStyle}
     cursor: pointer;
@@ -70,6 +71,7 @@ export const StyledSelect = Styled.select`
     -moz-appearance: none;
     appearance: none;
     width: calc(60% - 30px);
+    float: ${(props: {right: boolean}) => props.right ? "right" : "none"};
 `;
 
 export const FormEntry = Styled.span`

@@ -1,9 +1,14 @@
 import React from 'react';
 import {TranscriptionEvent} from "../types/transcriptionEvent";
+import Styled from "styled-components";
+
+const Table = Styled.table`
+    width: 100%;
+`;
 
 export const TranscriptionText = ({transcriptions}:
                                       { transcriptions: TranscriptionEvent[] }) => (
-    <table>
+    <Table>
         <tbody>
         <tr>
             <th>Best transcription</th>
@@ -17,5 +22,5 @@ export const TranscriptionText = ({transcriptions}:
                     <td>{t.alternatives[0].confidence}</td>
                 </tr>)}
         </tbody>
-    </table>
+    </Table>
 );

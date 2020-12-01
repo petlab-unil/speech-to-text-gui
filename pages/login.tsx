@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {Button, Input, Container, ImgEye, Loading} from '@components/login/loginContainer';
+import {Button, Input, Container, ImgEye, Loading, ErrorMessage} from '@components/login/loginContainer';
 import {LoginState} from "../types/account";
 import {Api} from "../services/api";
+import {Surrounding} from "@components/fileStream/input";
 
 export default class extends Component<{}, LoginState> {
     public static title: string = "login";
@@ -14,7 +15,8 @@ export default class extends Component<{}, LoginState> {
             password: ""
         },
         loadingDisplay: "none",
-    }
+        err: null
+    };
 
     componentDidMount() {
         document.cookie = "authorization=";
@@ -35,10 +37,16 @@ export default class extends Component<{}, LoginState> {
     };
 
     private auth = async () => {
-        this.setState({loadingDisplay: "block"})
-        const api = new Api();
-        await api.login(this.state.login);
-    }
+        try {
+            this.setState({err: null, loadingDisplay: "block"});
+            const api = new Api();
+            await api.login(this.state.login);
+        } catch (e) {
+            this.setState({err: e.message});
+        } finally {
+            this.setState({loadingDisplay: "none"});
+        }
+    };
 
 
     private changeHide = () => {
@@ -54,18 +62,21 @@ export default class extends Component<{}, LoginState> {
     render() {
         return (
             <>
-                <Container>
-                    User:
-                    <Input type="text" onChange={this.changeName}/>
-                    Password:
-                    <Input type={this.state.isHidden ? 'password' : 'text'} onChange={this.changePassword}/>
-                    <ImgEye src={this.state.isHidden ? '/icons8-hide-60.png' : '/icons8-eye-60.png'}
-                            onClick={this.changeHide} alt='Eye'/>
-                    <br/>
-                    <Button onClick={this.auth}>Authenticate</Button>
-                    <br/>
-                    <br/>
-                </Container>
+                <Surrounding>
+                    <Container>
+                        user:
+                        <Input type="text" onChange={this.changeName}/>
+                        password:
+                        <Input type={this.state.isHidden ? 'password' : 'text'} onChange={this.changePassword}/>
+                        <ImgEye src={this.state.isHidden ? '/icons8-hide-60.png' : '/icons8-eye-60.png'}
+                                onClick={this.changeHide} alt='Eye'/>
+                        <br/>
+                        <Button onClick={this.auth}>Authenticate</Button>
+                        <br/>
+                        <br/>
+                        {!!this.state.err && <ErrorMessage>Error: {this.state.err}</ErrorMessage>}
+                    </Container>
+                </Surrounding>
 
                 <Loading className="sk-chase" style={{display: this.state.loadingDisplay}}>
                     <Loading className="sk-chase-dot"/>

@@ -1,6 +1,6 @@
 import Router from 'next/router';
 import {AccountSchema, SessionSchema} from "../types/account";
-import {Translation, User} from "../types/user";
+import {Transcription, User} from "../types/user";
 
 export class Api {
     public static host = `http://${process.env.NEXT_PUBLIC_API_URL}`;
@@ -67,25 +67,6 @@ export class Api {
         return res;
     };
 
-    private delete = async (path: string, body: string): Promise<Response> => {
-        const requestOptions = {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': this.authorization,
-            },
-            body
-        };
-
-        const res = await fetch(`${Api.host}/${path}`, requestOptions);
-
-        if (res.status === 403) {
-            await this.redirectLogin();
-        }
-
-        return res;
-    };
-
     public removeCtx = () => {
         delete this.ctx;
     };
@@ -135,15 +116,12 @@ export class Api {
     };
 
     public login = async (account: AccountSchema) => {
-        const res = await this.post("account/login", JSON.stringify(account));
-        try {
+            const res = await this.post("account/login", JSON.stringify(account));
+            if(res.status >= 300) throw new Error(await res.text());
             const key: SessionSchema = await res.json();
             document.cookie = `authorization=${key._id};expires=${new Date(new Date().getTime() + 60 * 60 * 1000 * 48).toUTCString()}`;
             this.setAuth(key._id);
             await Router.push("/");
-        } catch (error) {
-
-        }
     };
 
     public me = async (): Promise<User> => {
@@ -151,7 +129,7 @@ export class Api {
         return await res.json();
     };
 
-    public oneTranslation = async (id: string): Promise<Translation> => {
+    public oneTranslation = async (id: string): Promise<Transcription> => {
         const res = await this.get(`translations/one?id=${id}`);
         return await res.json();
     };

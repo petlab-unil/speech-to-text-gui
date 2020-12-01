@@ -6,23 +6,23 @@ export const Container = Styled.div`
     color: lightblue;
     margin: 20px auto 0 auto;
     width: 400px;
-    padding: 5px;
-    border: 1px solid lightblue;
-    border-radius: 5px;
+    padding: 40px;
+    border-radius: 40px;
     display: block;
     
-    font-family: Helvetica Neue; 
+    font-family: 'Major Mono Display', monospace;
     font-size: 20px; 
     font-style: normal; 
     font-variant: normal; 
     font-weight: 500; 
     line-height: 30px;
+    background-color: #838792;
 `;
 
 export const Button = Styled.div`
     height: 30px;
     width: 92%;
-    background-color: lightblue;
+    background-color: #636c78;
     color: black;
     padding: 5px;
     margin: 2px 2px 2px 10px;
@@ -82,3 +82,9 @@ export const Loading = Styled.div`
     }
     ${loading}
 `;
+
+export const ErrorMessage = Styled.div`
+    color: black;
+    font-weight: bold;
+    background-color: rgba(255, 20, 20, .2);
+`

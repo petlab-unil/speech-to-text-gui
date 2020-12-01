@@ -16,4 +16,5 @@ export const SubSectionTitle = Styled.h2`
     font-size: 20px;
     margin-bottom: 0;
     padding-bottom: 0;
+    color: rgba(200, 200, 200, .9);
 `;
