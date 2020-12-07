@@ -154,12 +154,12 @@ const TranslationContainer = ({transcriptionId, name, authorization, allAccounts
         process.browser ? window.btoa : (u8str: string) => Buffer.from(u8str).toString("base64");
 
     const {transcripts} = transcription;
-    const b64 = btoa(encodeURIComponent(JSON.stringify(transcripts)));
+    const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(transcripts))));
     const hrefDlJson = `data:application/octet-stream;charset=utf-8;base64,${b64}`;
     const txt = transcripts.map(t => t.alternatives.map(({transcript}) => transcript).join(" ")).join(" ");
-    const hrefDlTxt = `data:application/octet-stream;charset=utf-8;base64,${btoa(encodeURIComponent(txt))}`;
+    const hrefDlTxt = `data:application/octet-stream;charset=utf-8;base64,${btoa(unescape(encodeURIComponent(txt)))}`;
     const withSpeaker = extractSentences(transcripts);
-    const hrefDlWithSpeaker = `data:application/octet-stream;charset=utf-8;base64,${btoa(encodeURIComponent(withSpeaker))}`;
+    const hrefDlWithSpeaker = `data:application/octet-stream;charset=utf-8;base64,${btoa(unescape(encodeURIComponent(withSpeaker)))}`;
 
     const updateToShare = (e) => {
         setToShare(e.target.value);
@@ -181,11 +181,11 @@ const TranslationContainer = ({transcriptionId, name, authorization, allAccounts
         </SectionTitle>
         <Surrounding>
             <TranscriptionWrapper>
-                <DownloadButton download={`${name.split(".")[0]}.json`} href={hrefDlJson}>Download
+                <DownloadButton download={`${transcription.file_name.split(".")[0]}.json`} href={hrefDlJson}>Download
                     json</DownloadButton>
-                <DownloadButton download={`${name.split(".")[0]}.txt`} href={hrefDlTxt}>Download text</DownloadButton>
+                <DownloadButton download={`${transcription.file_name.split(".")[0]}.txt`} href={hrefDlTxt}>Download text</DownloadButton>
                 {hrefDlWithSpeaker.length > 0 &&
-                <DownloadButton download={`${name.split(".")[0]}.txt`} href={hrefDlWithSpeaker}>Download text with
+                <DownloadButton download={`${transcription.file_name.split(".")[0]}.txt`} href={hrefDlWithSpeaker}>Download text with
                     speaker
                     tags <b>(BETA)</b></DownloadButton>}
                 <ShareWithWrapper>
