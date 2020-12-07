@@ -98,9 +98,9 @@ const extractSentences = (transcriptionEvents: TranscriptionEvent[]): string => 
     const wordsExist = transcriptionEvents?.[0]?.alternatives?.[0]?.words?.length;
     if (!wordsExist) return "";
     let currentSpeaker = transcriptionEvents[0].alternatives[0].words[0]?.speakertag;
-    let currentSentence = `- Speaker ${currentSpeaker}: `;
-
-    let currentWords: Word[] = [];
+    const firstTimeStamp = transcriptionEvents[0].alternatives[0].words[0]?.starttime;
+    const firstTimeStampStr = `${Math.floor(firstTimeStamp.seconds / 60)}:${firstTimeStamp.seconds % 60}`;
+    let currentSentence = `- ${firstTimeStampStr}, Speaker ${currentSpeaker}: `;
 
     // Insert empty so we don't skip last transcript
     transcriptionEvents.push({
@@ -113,18 +113,15 @@ const extractSentences = (transcriptionEvents: TranscriptionEvent[]): string => 
 
     transcriptionEvents.forEach(({alternatives}) =>
         alternatives.forEach(({words}) => {
-            if (currentWords.length < words.length) {
-                currentWords = words;
-                return;
-            }
-            currentWords.forEach(({speakertag, word}) => {
+            words.forEach(({speakertag, word, starttime}) => {
                 if (speakertag === currentSpeaker) currentSentence += `${word} `;
                 else {
                     currentSpeaker = speakertag;
-                    currentSentence += `\n- Speaker ${currentSpeaker}: ${word} `;
+                    const timestampStr = `${Math.floor(starttime.seconds / 60)}:${starttime.seconds % 60}`;
+
+                    currentSentence += `\n- ${timestampStr}, Speaker ${currentSpeaker}: ${word} `;
                 }
             });
-            currentWords = [];
         }));
 
     return currentSentence;
@@ -157,12 +154,12 @@ const TranslationContainer = ({transcriptionId, name, authorization, allAccounts
         process.browser ? window.btoa : (u8str: string) => Buffer.from(u8str).toString("base64");
 
     const {transcripts} = transcription;
-    const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(transcripts))));
+    const b64 = btoa(encodeURIComponent(JSON.stringify(transcripts)));
     const hrefDlJson = `data:application/octet-stream;charset=utf-8;base64,${b64}`;
     const txt = transcripts.map(t => t.alternatives.map(({transcript}) => transcript).join(" ")).join(" ");
-    const hrefDlTxt = `data:application/octet-stream;charset=utf-8;base64,${btoa(unescape(encodeURIComponent(txt)))}`;
+    const hrefDlTxt = `data:application/octet-stream;charset=utf-8;base64,${btoa(encodeURIComponent(txt))}`;
     const withSpeaker = extractSentences(transcripts);
-    const hrefDlWithSpeaker = `data:application/octet-stream;charset=utf-8;base64,${btoa(unescape(encodeURIComponent(withSpeaker)))}`;
+    const hrefDlWithSpeaker = `data:application/octet-stream;charset=utf-8;base64,${btoa(encodeURIComponent(withSpeaker))}`;
 
     const updateToShare = (e) => {
         setToShare(e.target.value);
